@@ -25,7 +25,7 @@ gem "rename"
 gem 'carrierwave', '~> 1.0'
 
 # Use Puma as the app server
-gem 'puma', '~> 3.11'
+gem 'puma'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -56,11 +56,6 @@ gem 'bootsnap', '>= 1.1.0', require: false
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-
-  gem 'capistrano', require: false
-  gem 'capistrano-rvm', require: false
-  gem 'capistrano-rails', require: false
-  gem 'capistrano-bundler', require: false
 end
 
 group :development do
@@ -71,6 +66,13 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'annotate'
+
+  gem 'capistrano'
+  gem 'capistrano3-puma'
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-rvm'
+
 end
 
 group :test do

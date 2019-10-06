@@ -1,5 +1,9 @@
 # config valid only for current version of Capistrano
-lock '3.5.0'
+lock "~> 3.11.2"
+
+# set :application, "my_app_name"
+# set :repo_url, "git@example.com:me/my_repo.git"
+
 
 set :application, 'fast_food'
 set :repo_url, 'git@github.com:xphabib/fast_food.git' # Edit this to match your repository
@@ -59,15 +63,15 @@ set :puma_preload_app, false
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-namespace :deploy do
-
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
-    end
-  end
-
-end
+# namespace :deploy do
+#
+#   after :restart, :clear_cache do
+#     on roles(:web), in: :groups, limit: 3, wait: 10 do
+#       # Here we can do anything such as:
+#       # within release_path do
+#       #   execute :rake, 'cache:clear'
+#       # end
+#     end
+#   end
+#
+# end
