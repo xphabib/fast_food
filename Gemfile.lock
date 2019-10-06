@@ -305,7 +305,7 @@ PLATFORMS
 DEPENDENCIES
   activeadmin
   annotate
-  bootsnap
+  bootsnap (>= 1.1.0)
   byebug
   capistrano
   capistrano-bundler
@@ -336,7 +336,7 @@ DEPENDENCIES
   wkhtmltopdf-binary
 
 RUBY VERSION
-   ruby 2.4.6p354
+   ruby 2.4.0p0
 
 BUNDLED WITH
-   1.17.3
+   2.0.2
