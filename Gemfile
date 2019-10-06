@@ -75,6 +75,8 @@ group :development do
 
 end
 
+gem 'listen', '>= 3.0.5', '< 3.2'
+
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
