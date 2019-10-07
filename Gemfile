@@ -11,7 +11,7 @@ gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
 # gem 'mysql2'
-
+#
 gem 'pg'
 
 gem "figaro"
