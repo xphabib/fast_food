@@ -1,80 +1,94 @@
-# config valid only for current version of Capistrano
-lock "~> 3.11.2"
-
-# set :application, "my_app_name"
-# set :repo_url, "git@example.com:me/my_repo.git"
-
+# config valid only for Capistrano 3.1
+lock '3.11.2'
 
 set :application, 'fast_food'
-set :repo_url, 'git@github.com:xphabib/fast_food.git' # Edit this to match your repository
-set :branch, :master
-set :deploy_to, '/home/deployer/fast_food'
-set :pty, true
-set :linked_files, %w{config/database.yml config/application.yml }
-# set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/uploads}
-set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/uploads pdf_files}
-set :keep_releases, 5
-set :rvm_type, :user
-set :rvm_ruby_version, 'ruby-2.4.0' # Edit this if you are using MRI Ruby
-
-set :assets_prefix, 'pipeline_assets'
-
-set :puma_rackup, -> { File.join(current_path, 'config.ru') }
-set :puma_state, "#{shared_path}/tmp/pids/puma.state"
-set :puma_pid, "#{shared_path}/tmp/pids/puma.pid"
-set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"    #accept array for multi-bind
-set :puma_conf, "#{shared_path}/puma.rb"
-set :puma_access_log, "#{shared_path}/log/puma_error.log"
-set :puma_error_log, "#{shared_path}/log/puma_access.log"
-set :puma_role, :app
-set :puma_env, fetch(:rack_env, fetch(:rails_env, 'production'))
-set :puma_threads, [0, 8]
-set :puma_workers, 0
-set :puma_worker_timeout, nil
-set :puma_init_active_record, true
-set :puma_preload_app, false
-
+set :repo_url, 'git@github.com:xphabib/fast_food.git'
 
 # Default branch is :master
-# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
+# ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
 
-# Default deploy_to directory is /var/www/my_app_name
-# set :deploy_to, '/var/www/my_app_name'
+# Default deploy_to directory is /var/www/my_app
+# set :deploy_to, '/var/www/my_app'
 
 # Default value for :scm is :git
-# set :scm, :git
+set :scm, :git
+# set :ssh_options, {
+#                     :keys => '/home/nazrul/Desktop/shyftn/shyftn.pem'
+#                 }
+# Default value for :format is :pretty
+# set :format, :pretty
 
-# Default value for :format is :airbrussh.
-# set :format, :airbrussh
-
-# You can configure the Airbrussh format using :format_options.
-# These are the defaults.
-# set :format_options, command_output: true, log_file: 'log/capistrano.log', color: :auto, truncate: :auto
+# Default value for :log_level is :debug
+# set :log_level, :debug
 
 # Default value for :pty is false
 # set :pty, true
+server '13.59.221.197',
+       :user => 'deployer',
+       :roles => %w{web app db}
+
+set :rvm_ruby_version, '2.4.0'
 
 # Default value for :linked_files is []
-# set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
+set :linked_files, %w{config/application.yml config/database.yml config/secrets.yml}
 
 # Default value for linked_dirs is []
-# set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system')
+set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/uploads}# pdf_files}
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
-# Default value for keep_releases is 5
-# set :keep_releases, 5
+set :assets_prefix, 'pipeline_assets'
 
-# namespace :deploy do
-#
-#   after :restart, :clear_cache do
-#     on roles(:web), in: :groups, limit: 3, wait: 10 do
-#       # Here we can do anything such as:
-#       # within release_path do
-#       #   execute :rake, 'cache:clear'
-#       # end
-#     end
-#   end
-#
-# end
+# Default value for keep_releases is 5
+set :keep_releases, 5
+
+namespace :deploy do
+  #before :deploy, "deploy:check_revision"
+  #after 'deploy:symlink:shared', 'deploy:compile_assets_locally'
+  after :finishing, 'deploy:cleanup'
+  #before 'deploy:setup_config', 'nginx:remove_default_vhost'
+  #after 'deploy:setup_config', 'nginx:reload'
+  #after 'deploy:setup_config', 'monit:restart'
+  #after 'deploy:publishing', 'deploy:restart'
+
+  desc 'Restart application'
+  task :restart do
+    on roles(:app), in: :sequence, wait: 5 do
+      # Your restart mechanism here, for example:
+      # execute :touch, release_path.join('tmp/restart.txt')
+    end
+  end
+
+  # after :publishing, :restart
+
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
+  end
+end
+
+task :upload_secret_files do
+  on roles(:all) do |host|
+    begin
+      execute "mkdir #{shared_path}/config"
+    rescue
+    end
+    upload! "config/application.yml", "#{shared_path}/config/application.yml"
+  end
+end
+
+desc 'Invoke a rake command on the remote server'
+task :invoke, [:command] => 'deploy:set_rails_env' do |task, args|
+  on primary(:app) do
+    within current_path do
+      with :rails_env => fetch(:rails_env) do
+        rake args[:command]
+      end
+    end
+  end
+end
