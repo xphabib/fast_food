@@ -30,7 +30,7 @@ server '13.59.221.197',
 set :rvm_ruby_version, '2.4.0'
 
 # Default value for :linked_files is []
-set :linked_files, %w{config/application.yml config/database.yml config/secrets.yml}
+set :linked_files, %w{config/application.yml config/database.yml}# config/secrets.yml}
 
 # Default value for linked_dirs is []
 set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/assets public/uploads}# pdf_files}
@@ -38,7 +38,7 @@ set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/sys
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
-set :assets_prefix, 'pipeline_assets'
+# set :assets_prefix, 'pipeline_assets'
 
 # Default value for keep_releases is 5
 set :keep_releases, 5
